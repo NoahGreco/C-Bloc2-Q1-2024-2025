@@ -144,6 +144,21 @@ const char* MainWindowEx3::getGroupe3()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
 {
+  int trace = open("Trace.log", O_CREAT | O_WRONLY | O_APPEND, 0644);
+
+    if (trace == -1)
+    {
+      perror("Erreur lors de l'ouverture de Trace.log"); //mettre ouverte ligne 14 et fermeture ligne 19
+      exit(EXIT_FAILURE);
+    }
+
+    // Rediriger stderr vers le fichier log
+    if (dup2(trace, STDERR_FILENO) == -1)
+    {
+      perror("Erreur lors de la redirection de stderr");
+      ::close(trace);
+      exit(EXIT_FAILURE);
+    }
   fprintf(stderr,"Clic sur le bouton Lancer Recherche\n");
   pid_t idFils1,idFils2,idFils3,idPere;
   int status;
@@ -168,11 +183,10 @@ void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
       }
     }
   }
-  printf("AAAAAAAAAAAAAAAA\n");
   /////////////////////////
-  if(recherche2Selectionnee())
+  if(recherche2Selectionnee()) 
+    
   {
-    printf("XXXXXXXXXXXXXXXX\n");
     if((idFils2=fork())==-1)
     {
       perror("Erreur de fork2");
@@ -194,9 +208,7 @@ void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
   }
   
     /////////////////////////
-   printf("BBBBBBBBBBBBBB\n"); 
 if(recherche3Selectionnee()){
-  printf("YYYYYYYYYYYYYYYYY\n");
   if((idFils3=fork())==-1)
     {
       perror("Erreur de fork");
@@ -246,12 +258,29 @@ if(recherche3Selectionnee()){
 
 void MainWindowEx3::on_pushButtonVider_clicked()
 {
+  
   fprintf(stderr,"Clic sur le bouton Vider\n");
-  // TO DO
+
+  //Vider les champs de groupe
+  ui->lineEditGroupe1->clear();
+  ui->lineEditGroupe2->clear();
+  ui->lineEditGroupe3->clear();
+  
+  // Vider les champs de résultat
+  ui->lineEditResultat1->clear();
+  ui->lineEditResultat2->clear();
+  ui->lineEditResultat3->clear();
+
+  // Désélectionner les checkboxes
+  ui->checkBoxRecherche1->setChecked(false);
+  ui->checkBoxRecherche2->setChecked(false);
+  ui->checkBoxRecherche3->setChecked(false);
+  fprintf(stderr, "Tous les champs ont été vidés.\n");
 }
 
 void MainWindowEx3::on_pushButtonQuitter_clicked()
 {
   fprintf(stderr,"Clic sur le bouton Quitter\n");
-  // TO DO
+
+  close();
 }
